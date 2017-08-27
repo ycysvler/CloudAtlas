@@ -1,6 +1,6 @@
 {
   "name":"eos-mobilehall-test",
-  "titleSuffix": " - 移动营业厅",
+  "titleSuffix": " - 云图",
   "url":"http://220.231.2.33:8081/icm-apps/rest/v1/trans",
   "sign": "IPhz8ZkNo5a2YClSDJmVVCtEElk=",
   "app_id":"D6587473F3CFAFC4",
