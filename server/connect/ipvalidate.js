@@ -9,19 +9,11 @@ module.exports = (req, res, next) => {
     // format ip
     let ip = req.ip.replace('::ffff:', '');
     console.log('req entid:', req.entid);
-    Enterprise.findOne({entid: req.entid}, function (err, item) {
 
-        if (err) {
-            console.log('ip err:', err);
-            res.send(500, err);
-        } else {
-
-            if (item.ips.includes(ip) || ip === '::1') {
-                next();
-            } else {
-                res.send(403.7, '非法请求！');
-            }
-        }
-    });
+    if (req.ent.ips.includes(ip) || ip === '::1') {
+        next();
+    } else {
+        res.send(405, '非法请求！');
+    }
 }
 
