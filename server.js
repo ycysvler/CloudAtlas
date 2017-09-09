@@ -45,8 +45,10 @@ app.use(bodyParser.json());
 app.use(entloader);
 // 处理ip白名单
 app.use(ipvalidate);
-
+// paas 相关接口
 app.use('/api', loader(path.join(__dirname, './server/routes/api'), true));
+// 管理平台相关接口
+app.use('/api', loader(path.join(__dirname, './server/routes/mgr'), true));
 
 app.use(express.static(path.join(__dirname, 'public')));
 

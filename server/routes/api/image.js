@@ -11,6 +11,7 @@ let fs = require('fs');
 let getMongoPool = require('../../mongo/pool');
 
 module.exports = function (router) {
+    // 旧实现，暂留
     router.get('/enterprises/:entid/images', (req, res, next) => {
         let entid = req.params.entid;
         let Image = getMongoPool(entid).Image;
@@ -18,7 +19,7 @@ module.exports = function (router) {
             res.json(items);
         });
     });
-
+    // 旧实现，暂留
     router.get('/enterprises/:entid/images/:image', (req, res, next) => {
         let entid = req.params.entid;
         let Image = getMongoPool(entid).Image;
@@ -26,7 +27,7 @@ module.exports = function (router) {
             res.json(item);
         });
     });
-
+    // 旧实现，暂留
     router.post('/enterprises/:entid/images', (req, res, next) => {
         let entid = req.params.entid;
         let Image = getMongoPool(entid).Image;
@@ -62,4 +63,48 @@ module.exports = function (router) {
         });
     });
 
+
+    // PaaS -> 图像上传
+    // PaaS -> 分配类型
+    router.put('/images/:name/type', (req, res, next) => {
+        // connect 使用 appid 换算出 entid
+        let entid = req.entid;
+        let name = req.params.name;
+        let type = req.body.type;
+
+        let Image = getMongoPool(entid).Image;
+        Image.findOneAndUpdate({name: name}, {type:type}, function (err, item) {
+            res.send(200, true);
+        });
+    });
+    // PaaS -> 分配扩展信息
+    router.put('/images/:name/extend', (req, res, next) => {
+        // connect 使用 appid 换算出 entid
+        let entid = req.entid;
+        let name = req.params.name;
+        let type = req.body.extend;
+
+        /* 待实现 */
+    });
+    // PaaS -> 查询 -> 按名称查询
+    router.get('/images/:name', (req, res, next) => {
+        // connect 使用 appid 换算出 entid
+        let entid = req.entid;
+        let name = req.params.name;
+        let Image = getMongoPool(entid).Image;
+        Image.findOne({name: name},function(err, item){
+            res.json(item);
+        });
+    });
+    // PaaS -> 查询 -> 按类型查询
+    router.get('/images/:type/:pagesize/:pageindex', (req, res, next) => {
+        // connect 使用 appid 换算出 entid
+        let entid = req.entid;
+        let type = req.params.type;
+        let pagesize = req.params.pagesize;
+        let pageindex = req.params.pageindex;
+        let Image = getMongoPool(entid).Image;
+
+        /* 待实现 */
+    });
 }
