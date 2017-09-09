@@ -141,7 +141,7 @@ module.exports = function (router) {
 
         /* 待实现 */
     });
-    // PaaS -> 删除
+    // PaaS -> 删除 -> 按名称
     router.delete('/images/:name', (req, res, next) => {
         // connect 使用 appid 换算出 entid
         let entid = req.entid;
@@ -152,5 +152,14 @@ module.exports = function (router) {
             if (err) return handleError(err);
             res.send(200, true);
         });
+    });
+    // PaaS -> 删除 -> 按分类
+    router.delete('/images/type/:type', (req, res, next) => {
+        // connect 使用 appid 换算出 entid
+        let entid = req.entid;
+        let type = req.params.type;
+        let Image = getMongoPool(entid).Image;
+
+        /* 待实现 */
     });
 }
