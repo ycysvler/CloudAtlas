@@ -65,6 +65,40 @@ module.exports = function (router) {
 
 
     // PaaS -> 图像上传
+    router.post('/images', (req, res, next) => {
+        let entid = req.entid;
+        let Image = getMongoPool(entid).Image;
+
+        var form = new multiparty.Form({uploadDir: './public/upload/'});
+
+        form.parse(req, function (err, fields, files) {
+
+            var resolvepath;
+
+            for (var name in files) {
+                let item = files[name][0];
+                resolvepath = path.resolve(item.path);
+            }
+
+            let file = path.resolve(resolvepath);
+            fs.readFile(file, function (err, chunk) {
+                if (err)
+                    return console.error(err);
+
+                let item = new Image();
+                item.createtime = new moment();
+                item.source = chunk;
+                // 如果有类型和扩展信息，那就加上吧
+                item.type = fields.type ? fields.type[0]:null;
+                item.extend = fields.extend ? fields.extend[0]:null;
+
+                item.save(function (err, item) {
+                    fs.unlink(file,()=>{});
+                    res.send(200,true);
+                });
+            });
+        });
+    });
     // PaaS -> 分配类型
     router.put('/images/:name/type', (req, res, next) => {
         // connect 使用 appid 换算出 entid
@@ -106,5 +140,17 @@ module.exports = function (router) {
         let Image = getMongoPool(entid).Image;
 
         /* 待实现 */
+    });
+    // PaaS -> 删除
+    router.delete('/images/:name', (req, res, next) => {
+        // connect 使用 appid 换算出 entid
+        let entid = req.entid;
+        let name = req.params.name;
+        let Image = getMongoPool(entid).Image;
+
+        Image.remove({name: name},function(err, item){
+            if (err) return handleError(err);
+            res.send(200, true);
+        });
     });
 }
