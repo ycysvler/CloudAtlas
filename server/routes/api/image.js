@@ -1,7 +1,6 @@
 /**
  * Created by VLER on 2017/8/8.
  */
-
 let multiparty = require('multiparty');
 let moment = require('moment');
 let uuid = require('uuid');
@@ -69,6 +68,9 @@ module.exports = function (router) {
         let entid = req.ent.entid;
         let Image = getMongoPool(entid).Image;
 
+        // 增加判断，如果没有带类型，返回400
+        //  res.send(400,'filed type must input!');
+
         var form = new multiparty.Form({uploadDir: './public/upload/'});
 
         form.parse(req, function (err, fields, files) {
@@ -91,6 +93,7 @@ module.exports = function (router) {
                 // 如果有类型和扩展信息，那就加上吧
                 item.type = fields.type ? fields.type[0]:null;
                 item.extend = fields.extend ? fields.extend[0]:null;
+                item.state = 0; //新图像
 
                 item.save(function (err, item) {
                     fs.unlink(file,()=>{});
@@ -107,6 +110,13 @@ module.exports = function (router) {
         let type = req.body.type;
 
         let Image = getMongoPool(entid).Image;
+
+        // 假设从 7 -> 9
+        // 查索引7，索引9
+        // 如果7存在，state改成-1
+        // 如果9存在，state改成0
+        // 如果9不存在，新增索引
+
         Image.findOneAndUpdate({name: name}, {type:type}, function (err, item) {
             res.send(200, true);
         });
@@ -116,7 +126,7 @@ module.exports = function (router) {
         // connect 使用 appid 换算出 entid
         let entid = req.ent.entid;
         let name = req.params.name;
-        let type = req.body.extend;
+        let extend = req.body.extend;
 
         /* 待实现 */
     });
@@ -148,10 +158,13 @@ module.exports = function (router) {
         let name = req.params.name;
         let Image = getMongoPool(entid).Image;
 
+        // 查一下对应的索引，如果存在，state 改成 -1
+
         Image.remove({name: name},function(err, item){
             if (err) return handleError(err);
             res.send(200, true);
         });
+
     });
     // PaaS -> 删除 -> 按分类
     router.delete('/images/type/:type', (req, res, next) => {
