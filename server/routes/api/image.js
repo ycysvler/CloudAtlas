@@ -66,7 +66,7 @@ module.exports = function (router) {
 
     // PaaS -> 图像上传
     router.post('/images', (req, res, next) => {
-        let entid = req.entid;
+        let entid = req.ent.entid;
         let Image = getMongoPool(entid).Image;
 
         var form = new multiparty.Form({uploadDir: './public/upload/'});
@@ -102,7 +102,7 @@ module.exports = function (router) {
     // PaaS -> 分配类型
     router.put('/images/:name/type', (req, res, next) => {
         // connect 使用 appid 换算出 entid
-        let entid = req.entid;
+        let entid = req.ent.entid;
         let name = req.params.name;
         let type = req.body.type;
 
@@ -114,7 +114,7 @@ module.exports = function (router) {
     // PaaS -> 分配扩展信息
     router.put('/images/:name/extend', (req, res, next) => {
         // connect 使用 appid 换算出 entid
-        let entid = req.entid;
+        let entid = req.ent.entid;
         let name = req.params.name;
         let type = req.body.extend;
 
@@ -123,7 +123,7 @@ module.exports = function (router) {
     // PaaS -> 查询 -> 按名称查询
     router.get('/images/:name', (req, res, next) => {
         // connect 使用 appid 换算出 entid
-        let entid = req.entid;
+        let entid = req.ent.entid;
         let name = req.params.name;
         let Image = getMongoPool(entid).Image;
         Image.findOne({name: name},function(err, item){
@@ -133,7 +133,7 @@ module.exports = function (router) {
     // PaaS -> 查询 -> 按类型查询
     router.get('/images/:type/:pagesize/:pageindex', (req, res, next) => {
         // connect 使用 appid 换算出 entid
-        let entid = req.entid;
+        let entid = req.ent.entid;
         let type = req.params.type;
         let pagesize = req.params.pagesize;
         let pageindex = req.params.pageindex;
@@ -144,7 +144,7 @@ module.exports = function (router) {
     // PaaS -> 删除 -> 按名称
     router.delete('/images/:name', (req, res, next) => {
         // connect 使用 appid 换算出 entid
-        let entid = req.entid;
+        let entid = req.ent.entid;
         let name = req.params.name;
         let Image = getMongoPool(entid).Image;
 
@@ -156,7 +156,7 @@ module.exports = function (router) {
     // PaaS -> 删除 -> 按分类
     router.delete('/images/type/:type', (req, res, next) => {
         // connect 使用 appid 换算出 entid
-        let entid = req.entid;
+        let entid = req.ent.entid;
         let type = req.params.type;
         let Image = getMongoPool(entid).Image;
 
