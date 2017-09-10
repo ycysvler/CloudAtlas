@@ -69,7 +69,7 @@ module.exports = function (router) {
         let Image = getMongoPool(entid).Image;
 
         // 增加判断，如果没有带类型，返回400
-        //  res.send(400,'filed type must input!');
+        //  res.send(400,'[type] parameter is missing');
 
         var form = new multiparty.Form({uploadDir: './public/upload/'});
 
