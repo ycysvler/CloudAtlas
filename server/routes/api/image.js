@@ -22,7 +22,7 @@ module.exports = function (router) {
     router.get('/enterprises/:entid/images/:image', (req, res, next) => {
         let entid = req.params.entid;
         let Image = getMongoPool(entid).Image;
-        Image.findOne({image:req.params.image},function(err, item){
+        Image.findOne({image: req.params.image}, function (err, item) {
             res.json(item);
         });
     });
@@ -51,12 +51,13 @@ module.exports = function (router) {
                 item.createtime = new moment();
                 item.source = chunk;
                 // 如果有类型和扩展信息，那就加上吧
-                item.type = fields.type ? fields.type[0]:null;
-                item.extend = fields.extend ? fields.extend[0]:null;
+                item.type = fields.type ? fields.type[0] : null;
+                item.extend = fields.extend ? fields.extend[0] : null;
 
                 item.save(function (err, item) {
-                    fs.unlink(file,()=>{});
-                    res.send(200,true);
+                    fs.unlink(file, () => {
+                    });
+                    res.send(200, true);
                 });
             });
         });
@@ -68,39 +69,41 @@ module.exports = function (router) {
         let entid = req.ent.entid;
         let Image = getMongoPool(entid).Image;
 
-        // 增加判断，如果没有带类型，返回400
-        //  res.send(400,'[type] parameter is missing');
-
         var form = new multiparty.Form({uploadDir: './public/upload/'});
 
         form.parse(req, function (err, fields, files) {
+            if (fields.type) {
+                var resolvepath;
 
-            var resolvepath;
+                for (var name in files) {
+                    let item = files[name][0];
+                    resolvepath = path.resolve(item.path);
+                }
 
-            for (var name in files) {
-                let item = files[name][0];
-                resolvepath = path.resolve(item.path);
-            }
+                let file = path.resolve(resolvepath);
+                fs.readFile(file, function (err, chunk) {
+                    if (err)
+                        return console.error(err);
 
-            let file = path.resolve(resolvepath);
-            fs.readFile(file, function (err, chunk) {
-                if (err)
-                    return console.error(err);
+                    let item = new Image();
+                    item.createtime = new moment();
+                    item.source = chunk;
+                    // 如果有类型和扩展信息，那就加上吧
+                    item.type = fields.type ? fields.type[0] : null;
+                    item.extend = fields.extend ? fields.extend[0] : null;
+                    item.state = 0; //新图像
 
-                let item = new Image();
-                item.createtime = new moment();
-                item.source = chunk;
-                // 如果有类型和扩展信息，那就加上吧
-                item.type = fields.type ? fields.type[0]:null;
-                item.extend = fields.extend ? fields.extend[0]:null;
-                item.state = 0; //新图像
-
-                item.save(function (err, item) {
-                    fs.unlink(file,()=>{});
-                    res.send(200,true);
+                    item.save(function (err, item) {
+                        fs.unlink(file, () => {
+                        });
+                        res.send(200, true);
+                    });
                 });
-            });
+            } else {
+                res.send(400, '[type] parameter is missing');
+            }
         });
+
     });
     // PaaS -> 分配类型
     router.put('/images/:name/type', (req, res, next) => {
@@ -117,7 +120,7 @@ module.exports = function (router) {
         // 如果9存在，state改成0
         // 如果9不存在，新增索引
 
-        Image.findOneAndUpdate({name: name}, {type:type}, function (err, item) {
+        Image.findOneAndUpdate({name: name}, {type: type}, function (err, item) {
             res.send(200, true);
         });
     });
@@ -136,7 +139,7 @@ module.exports = function (router) {
         let entid = req.ent.entid;
         let name = req.params.name;
         let Image = getMongoPool(entid).Image;
-        Image.findOne({name: name},function(err, item){
+        Image.findOne({name: name}, function (err, item) {
             res.json(item);
         });
     });
@@ -160,7 +163,7 @@ module.exports = function (router) {
 
         // 查一下对应的索引，如果存在，state 改成 -1
 
-        Image.remove({name: name},function(err, item){
+        Image.remove({name: name}, function (err, item) {
             if (err) return handleError(err);
             res.send(200, true);
         });
