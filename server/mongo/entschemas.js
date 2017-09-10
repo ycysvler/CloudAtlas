@@ -41,8 +41,8 @@ module.exports = class Schemas{
         this.imageIndexSchema = new mongoose.Schema({
             name: {type: String},                    // 图片名称
             type: {type: String,index: true},       // 业务类型
-            index: {type: int,index: true},         // 索引号
-            state:{type:int, index:true}            // 0 可用，-1 不可用
+            index: {type: Number,index: true},      // 索引号
+            state:{type:Number, index:true}         // 0 可用，-1 不可用
         });
         this.imageIndexSchema.index({ type: 1, index: 1 });
         this.imageIndexSchema.index({ type: 1, state: 1 });
