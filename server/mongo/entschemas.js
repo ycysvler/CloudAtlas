@@ -11,7 +11,7 @@ module.exports = class Schemas{
         });
 
         this.imageSchema = new mongoose.Schema({
-            name: {type: String,index: true},       // 图片名称
+            name: {type: String,index: {unique: true, dropDups: true}},       // 图片名称
             type: {type: String,index: true},       // 业务类型
             colour:{type: Number,index: true},      // 业务类型
             state:{type: Number,index: true},       // 状态 0:新图，1:正在计算特征，2：计算特征成功，-1：计算特征失败
