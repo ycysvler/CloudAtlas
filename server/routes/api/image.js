@@ -80,6 +80,7 @@ module.exports = function (router) {
                     resolvepath = path.resolve(item.path);
                 }
 
+
                 let file = path.resolve(resolvepath);
                 fs.readFile(file, function (err, chunk) {
                     if (err)
@@ -132,6 +133,9 @@ module.exports = function (router) {
         let extend = req.body.extend;
 
         /* 待实现 */
+        Image.findOneAndUpdate({name: name}, {extend: extend}, function (err, item) {
+            res.send(200, true);
+        });
     });
     // PaaS -> 查询 -> 按名称查询
     router.get('/images/:name', (req, res, next) => {
@@ -160,8 +164,11 @@ module.exports = function (router) {
         let entid = req.ent.entid;
         let name = req.params.name;
         let Image = getMongoPool(entid).Image;
+        let ImageIndex = getMongoPool(entid).ImageIndex;
 
         // 查一下对应的索引，如果存在，state 改成 -1
+        ImageIndex.findOneAndUpdate({name: name}, {type: -1}, function (err, item) {
+        });
 
         Image.remove({name: name}, function (err, item) {
             if (err) return handleError(err);
@@ -169,13 +176,6 @@ module.exports = function (router) {
         });
 
     });
-    // PaaS -> 删除 -> 按分类
-    router.delete('/images/type/:type', (req, res, next) => {
-        // connect 使用 appid 换算出 entid
-        let entid = req.ent.entid;
-        let type = req.params.type;
-        let Image = getMongoPool(entid).Image;
+    // PaaS -> 删除 -> 按分类 (这个功能，在删除类型里面实现)
 
-        /* 待实现 */
-    });
 }
