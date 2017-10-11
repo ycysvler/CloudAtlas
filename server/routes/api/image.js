@@ -74,12 +74,15 @@ module.exports = function (router) {
         form.parse(req, function (err, fields, files) {
             if (fields.type) {
                 var resolvepath;
+                var originalFilename;
 
                 for (var name in files) {
                     let item = files[name][0];
-                    resolvepath = path.resolve(item.path);
-                }
 
+                    resolvepath = path.resolve(item.path);
+
+                    originalFilename = item.originalFilename;
+                }
 
                 let file = path.resolve(resolvepath);
                 fs.readFile(file, function (err, chunk) {
@@ -88,6 +91,7 @@ module.exports = function (router) {
 
                     let item = new Image();
                     item.createtime = new moment();
+                    item.name = originalFilename;
                     item.source = chunk;
                     // 如果有类型和扩展信息，那就加上吧
                     item.type = fields.type ? fields.type[0] : null;
@@ -97,7 +101,9 @@ module.exports = function (router) {
                     item.save(function (err, item) {
                         fs.unlink(file, () => {
                         });
-                        res.send(200, true);
+
+                        if(err){res.send(500, err.errmsg);}
+                        else{res.send(200, true);}
                     });
                 });
             } else {
@@ -114,6 +120,31 @@ module.exports = function (router) {
         let type = req.body.type;
 
         let Image = getMongoPool(entid).Image;
+        let ImageType = getMongoPool(entid).ImageType;
+
+        Image.findOne({name:name},'name type', function(err, img){
+            if(img){
+                // 图像存在
+                if(img.type === type){
+                    // 类型没有变化，什么都不用做
+                }
+                else {
+                    // 原索引做删除处理
+                    ImageType.findOneAndUpdate({name:name,type:img.type},{state:-1},(err,item)=>{});
+
+                    ImageType.findOne({name:name,type:type},(err,item)=>{
+                        if(item){
+                            // 以前就是这个分类的
+                            ImageType.findOneAndUpdate({name:name,type:type},{state:0},(err,item)=>{});
+
+                        }else{
+
+                            //ImageType.find()
+                        }
+                    });
+                }
+            }
+        });
 
         // 假设从 7 -> 9
         // 查索引7，索引9
