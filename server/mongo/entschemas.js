@@ -31,9 +31,9 @@ module.exports = class Schemas{
         this.imageTypeSchema = new mongoose.Schema({
             name: {type: String,index: {unique: true, dropDups: true}}, // 类型名称
             code: {type: String,index: {unique: true, dropDups: true}}, // 类型编号
-            order:{type: Number},                                        // 类型排序
-            description:String,                                          //  描述信息
-            createtime:Date                                              //  创建时间
+            order:{type: Number},                                       // 类型排序
+            description:String,                                         // 描述信息
+            createtime:Date                                             // 创建时间
         });
 
         this.ImageType = conn.model('ImageType', this.imageTypeSchema);
