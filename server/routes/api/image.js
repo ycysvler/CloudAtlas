@@ -168,8 +168,8 @@ module.exports = function (router) {
             res.send(200, true);
         });
     });
-    // PaaS -> 查询 -> 按名称查询
-    router.get('/images/:name', (req, res, next) => {
+    // PaaS -> 查询 -> 按名称查询单条信息
+    router.get('/images/:name/info', (req, res, next) => {
         // connect 使用 appid 换算出 entid
         let entid = req.ent.entid;
         let name = req.params.name;
@@ -178,6 +178,18 @@ module.exports = function (router) {
             res.json(item);
         });
     });
+
+    // PaaS -> 获取图像数据
+    router.get('/images/:name',(req, res, next) =>{
+        // connect 使用 appid 换算出 entid
+        let entid = req.ent.entid;
+        let name = req.params.name;
+        let Image = getMongoPool(entid).Image;
+        Image.findOne({name: name}, 'source', function (err, item) {
+            res.send(item.source);
+        });
+    });
+
     // PaaS -> 查询 -> 按类型查询
     router.get('/images/:type/:pagesize/:pageindex', (req, res, next) => {
         // connect 使用 appid 换算出 entid
@@ -208,5 +220,6 @@ module.exports = function (router) {
 
     });
     // PaaS -> 删除 -> 按分类 (这个功能，在删除类型里面实现)
+
 
 }
