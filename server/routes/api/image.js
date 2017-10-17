@@ -178,7 +178,6 @@ module.exports = function (router) {
             res.json(item);
         });
     });
-
     // PaaS -> 获取图像数据
     router.get('/images/:name',(req, res, next) =>{
         // connect 使用 appid 换算出 entid
@@ -189,7 +188,6 @@ module.exports = function (router) {
             res.send(item.source);
         });
     });
-
     // PaaS -> 查询 -> 按类型查询
     router.get('/images/:type/:pagesize/:pageindex', (req, res, next) => {
         // connect 使用 appid 换算出 entid
