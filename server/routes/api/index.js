@@ -17,10 +17,20 @@ module.exports = function (router) {
         let msg = req.body;
         msg.entid = entid;
 
-        console.log(msg);
+        console.log('image_types',req.body.types);
 
-        pub.publish('RebuildIndex', JSON.stringify(msg));
-
-        res.send(200, true);
+        // 这里面应该检查一下，客户端是否指定重建那个type的索引，如果没有指定，那就是全量类型，在这里补全；
+        if(!req.body.imageTypes){
+            let ImageType = getMongoPool(entid).ImageType;
+            // 查找所有code
+            ImageType.find({},{_id:0}).select('code').exec(function (err, items) {
+                msg.imageTypes = items;
+                pub.publish('Index:RebuildIndex', JSON.stringify(msg));
+                res.send(200, true);
+            });
+        }else{
+            pub.publish('Index:RebuildIndex', JSON.stringify(msg));
+            res.send(200, true);
+        }
     });
 }
