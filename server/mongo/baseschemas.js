@@ -27,8 +27,16 @@ module.exports = class Schemas{
             appid:{type:String, index:true}        // 唯一开发ID
         });
 
+        this.configSchema = new mongoose.Schema({
+            package: {type: String,index: {unique: true, dropDups: true}},   // 包名
+            version: {type: String},                // 版本
+            content:{type: String},                 // 配置内容
+            createtime:Date                         // 创建时间
+        });
+
         this.User = conn.model('User', this.userSchema);
         this.Enterprise =  conn.model('Enterprise', this.enterpriseSchema);
+        this.Config =  conn.model('Config', this.configSchema);
     }
 
 
