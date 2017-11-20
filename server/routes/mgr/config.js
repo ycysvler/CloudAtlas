@@ -1,12 +1,17 @@
 /**
  * Created by VLER on 2017/8/8.
  */
-
-let getMongoPool = require('../../mongo/pool');
-
-let Config = getMongoPool().Config;
 let uuid = require('uuid');
 let moment = require('moment');
+let getMongoPool = require('../../mongo/pool');
+let Redis = require('ioredis');
+let rediscfg = require('../../config/redis');
+
+let redis = new Redis(rediscfg);
+let pub = new Redis(rediscfg);
+
+let Config = getMongoPool().Config;
+
 
 module.exports = function (router) {
     router.route('/config')
@@ -26,12 +31,14 @@ module.exports = function (router) {
         let item = new Config(req.body);
         item.createtime = new moment();
         item.save(function(err, item){
+            pub.publish('Config', req.body.package);
             res.json(item);
         });
     });
 
     router.put('/config/:package', (req, res, next)=> {
         Config.findOneAndUpdate({ "package":req.params.package }, req.body, function (err, item) {
+            pub.publish('Config', req.params.package);
             res.send(200, true);
         });
     });
@@ -39,6 +46,7 @@ module.exports = function (router) {
     router.delete('/config/:package',(req, res, next)=>{
         Config.remove({ "package":req.params.package }, function (err) {
             if (err) return handleError(err);
+            pub.publish('Config', req.params.package);
             res.send(200,true);
         });
     });
