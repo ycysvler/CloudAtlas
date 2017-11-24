@@ -13,7 +13,7 @@ let pub = new Redis(rediscfg);
 module.exports = function (router) {
 
     // PaaS -> 图片上传
-    router.post('/query/images', (req, res, next) => {
+    router.post('/search/images', (req, res, next) => {
         let entid = req.ent.entid;
 
         let Image = getMongoPool(entid).Image;
@@ -29,7 +29,6 @@ module.exports = function (router) {
                 let item = files[name][0];
 
                 resolvepath = path.resolve(item.path);
-
                 originalFilename = item.originalFilename;
             }
 
@@ -56,8 +55,11 @@ module.exports = function (router) {
                             res.send(500, err.errmsg);
                         }
                         else {
-                            res.send(200, {name:item.name});
+                            res.send(200, {name: item.name});
 
+                            var msg = {name: item.name, type: 'query', entid: entid};
+
+                            pub.publish('Feature:BuildFeature', JSON.stringify(msg));
 
                         }
                     });
@@ -68,24 +70,24 @@ module.exports = function (router) {
     });
 
     // PaaS -> 新建查询
-    router.post('/query', (req, res, next) => {
+    router.post('/search', (req, res, next) => {
 
     });
     // PaaS -> 查询任务列表
-    router.get('/query', (req, res, next) => {
+    router.get('/search', (req, res, next) => {
 
     });
     // PaaS -> 查询任务详情
-    router.get('/query/:id', (req, res, next) => {
+    router.get('/search/:id', (req, res, next) => {
 
     });
     // PaaS -> 查询进度
-    router.get('/query/:id/progress', (req, res, next) => {
+    router.get('/search/:id/progress', (req, res, next) => {
 
     });
 
     // PaaS -> 查询结果
-    router.get('/query/:id/images', (req, res, next) => {
+    router.get('/search/:id/images', (req, res, next) => {
 
     });
 }

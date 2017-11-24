@@ -10,7 +10,7 @@ let rediscfg = require('../../config/redis');
 let redis = new Redis(rediscfg);
 let pub = new Redis(rediscfg);
 
-let Config = getMongoPool().Config;
+let Config = getMongoPool('ha').Config;
 
 
 module.exports = function (router) {

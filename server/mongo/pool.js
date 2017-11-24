@@ -1,13 +1,17 @@
 let baseSchemas = require('./baseschemas');
 let entSchemas = require('./entschemas');
-
+let haSchemas = require('./haschemas');
 const pool = new Map();
 
 let getMongoPool = (entid)=>{
     entid = entid === undefined ? "cabase":entid;
 
     if(!pool.has(entid)){
-       if(entid === 'cabase'){
+        if(entid === 'ha'){
+            let schemas = new haSchemas();
+            pool.set(entid, schemas);
+        }
+       else if(entid === 'cabase'){
            let schemas = new baseSchemas();
            pool.set(entid, schemas);
        }else{

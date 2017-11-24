@@ -3,7 +3,7 @@ var rediscfg = require('./server/config/redis');
 var redis = new Redis(rediscfg);
 var pub = new Redis(rediscfg);
 
-redis.subscribe('news', 'music','RebuildIndex','Config', function (err, count) {
+redis.subscribe('news', 'music','RebuildIndex','Config','HeartBeat:TimeChange', function (err, count) {
     // Now we are subscribed to both the 'news' and 'music' channels.
     // `count` represents the number of channels we are currently subscribed to.
 
